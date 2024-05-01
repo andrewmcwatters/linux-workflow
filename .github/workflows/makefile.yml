@@ -12,7 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    # https://kernel.org
+    - name: Download
+      run: wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.16.2.tar.xz
 
     - name: configure
       run: ./configure
