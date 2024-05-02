@@ -23,6 +23,11 @@ jobs:
         cd linux-6.16.2
         make mrproper
 
+    - name: Install libelf-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libelf-dev
+
     # https://docs.kernel.org/admin-guide/README.html#build-directory-for-the-kernel
     - name: Configure and build the kernel
       run: |
