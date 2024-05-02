@@ -36,6 +36,3 @@ jobs:
         make -j $(nproc)
         make INSTALL_MOD_PATH=${{ github.workspace }}/iso INSTALL_PATH=${{ github.workspace }}/iso/boot modules_install install
         ls -l ${{ github.workspace }}/iso/boot
-
-    - name: Run distcheck
-      run: make distcheck
