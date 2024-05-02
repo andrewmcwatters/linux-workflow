@@ -23,11 +23,14 @@ jobs:
         cd linux-6.16.2
         make mrproper
 
-    - name: configure
-      run: ./configure
-
-    - name: Install dependencies
-      run: make
+    # https://docs.kernel.org/admin-guide/README.html#build-directory-for-the-kernel
+    - name: Configure and build the kernel
+      run: |
+        cd linux-6.16.2
+        make defconfig
+        make -j $(nproc)
+        make INSTALL_MOD_PATH=${{ github.workspace }}/iso INSTALL_PATH=${{ github.workspace }}/iso/boot modules_install install
+        ls -l ${{ github.workspace }}/iso/boot
 
     - name: Run check
       run: make check
