@@ -63,3 +63,9 @@ jobs:
         }
         EOF
         grub-mkrescue -o grub.iso iso
+
+    - name: Archive the ISO
+      uses: actions/upload-artifact@v4
+      with:
+        name: grub.iso
+        path: grub.iso
