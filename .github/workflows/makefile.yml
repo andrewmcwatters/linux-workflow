@@ -48,3 +48,18 @@ jobs:
         make -j $(nproc)
         make INSTALL_MOD_PATH=${{ github.workspace }}/iso INSTALL_PATH=${{ github.workspace }}/iso/boot modules_install install
         ls -l ${{ github.workspace }}/iso/boot
+
+    # https://www.gnu.org/software/grub/manual/grub/html_node/Making-a-GRUB-bootable-CD_002dROM.html
+    - name: Make a GRUB bootable CD-ROM
+      run: |
+        sudo apt-get install -y mtools xorriso
+        mkdir -p iso/boot/grub
+        cat << EOF > iso/boot/grub/grub.cfg
+        set default=0
+        set timeout=0
+        menuentry 'Linux' {
+            linux /boot/vmlinuz-${{ env.VERSION }}
+            initrd /boot/initramfs.cpio.gz
+        }
+        EOF
+        grub-mkrescue -o grub.iso iso
