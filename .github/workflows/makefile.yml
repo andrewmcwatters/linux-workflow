@@ -1,5 +1,8 @@
 name: Makefile CI
 
+env:
+  VERSION: 6.16.2
+
 on:
   push:
     branches: [ "main" ]
@@ -12,15 +15,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Cache the kernel
+      id: cache-kernel
+      uses: actions/cache@v4
+      with:
+        path: linux-${{ env.VERSION }}
+        key: linux-${{ env.VERSION }}
+
     # https://kernel.org
     - name: Download
-      run: wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.16.2.tar.xz
+      if: steps.cache-kernel.outputs.cache-hit != 'true'
+      run: wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${{ env.VERSION }}.tar.xz
 
     # https://docs.kernel.org/admin-guide/README.html#installing-the-kernel-source
     - name: Install the kernel source
+      if: steps.cache-kernel.outputs.cache-hit != 'true'
       run: |
-        xz -cd linux-6.16.2.tar.xz | tar xvf -
-        cd linux-6.16.2
+        xz -cd linux-${{ env.VERSION }}.tar.xz | tar xvf -
+        cd linux-${{ env.VERSION }}
         make mrproper
 
     - name: Install libelf-dev
@@ -31,7 +43,7 @@ jobs:
     # https://docs.kernel.org/admin-guide/README.html#build-directory-for-the-kernel
     - name: Configure and build the kernel
       run: |
-        cd linux-6.16.2
+        cd linux-${{ env.VERSION }}
         make defconfig
         make -j $(nproc)
         make INSTALL_MOD_PATH=${{ github.workspace }}/iso INSTALL_PATH=${{ github.workspace }}/iso/boot modules_install install
