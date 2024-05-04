@@ -49,6 +49,24 @@ jobs:
         make INSTALL_MOD_PATH=${{ github.workspace }}/iso INSTALL_PATH=${{ github.workspace }}/iso/boot modules_install install
         ls -l ${{ github.workspace }}/iso/boot
 
+    # https://docs.kernel.org/filesystems/ramfs-rootfs-initramfs.html
+    # https://docs.kernel.org/filesystems/ramfs-rootfs-initramfs.html#contents-of-initramfs
+    - name: Create initramfs image
+      run: |
+        mkdir initramfs
+        cat > hello.c << EOF
+        #include <stdio.h>
+        #include <unistd.h>
+
+        int main(int argc, char *argv[])
+        {
+          printf("Hello world!\n");
+          sleep(999999999);
+        }
+        EOF
+        gcc -static hello.c -o initramfs/init
+        (cd initramfs; find . | cpio -o -H newc | gzip) > iso/boot/initramfs.cpio.gz
+
     # https://www.gnu.org/software/grub/manual/grub/html_node/Making-a-GRUB-bootable-CD_002dROM.html
     - name: Make a GRUB bootable CD-ROM
       run: |
