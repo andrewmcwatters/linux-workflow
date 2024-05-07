@@ -58,7 +58,7 @@ jobs:
         set default=0
         set timeout=0
         menuentry 'Linux' {
-            linux /boot/vmlinuz-${{ env.VERSION }}
+            linux /boot/vmlinuz-${{ env.VERSION }} console=ttyS0 console=tty0 ignore_loglevel
             initrd /boot/initramfs.cpio.gz
         }
         EOF
